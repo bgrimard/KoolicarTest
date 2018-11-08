@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">KoolicarTest</string>
+    <string name="venue_list_title">Venues nearby</string>
+    <string name="venue_detail_title">Venue description</string>
+    <string name="clientId">0QB00MREY0KIHS21IVHCYSRDCQMQJGJHPO43K1MWEF2ISCAW</string>
+    <string name="clientSecret">2SLSEEIX2ZGZJQWYBFDJ3AOLU5NSEL0DLFGU4F40FDEMV1CJ</string>
+</resources>
