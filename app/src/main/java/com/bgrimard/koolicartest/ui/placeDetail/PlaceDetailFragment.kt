@@ -1,55 +1,69 @@
 package com.bgrimard.koolicartest.ui.placeDetail
 
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.bgrimard.koolicartest.R
-import com.bgrimard.koolicartest.model.Venue
-import com.google.gson.Gson
+import com.bgrimard.koolicartest.model.VenuesDetailVenue
+import com.bgrimard.koolicartest.util.nonNull
+import com.bgrimard.koolicartest.util.observe
 import dagger.android.support.DaggerFragment
-import io.reactivex.Observable
-import kotlinx.android.synthetic.main.place_detail.view.*
+import kotlinx.android.synthetic.main.place_detail.*
+import javax.inject.Inject
 
 class PlaceDetailFragment : DaggerFragment() {
 
-    private var item: Venue? = null
+    @Inject
+    lateinit var viewModelFactory: PlaceDetailViewModelFactory
+    private lateinit var placeDetailViewModel: PlaceDetailViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            if (it.containsKey(ARG_ITEM)) {
+            if (it.containsKey(ARG_ITEM_ID)) {
                 // Load the dummy content specified by the fragment
                 // arguments. In a real-world scenario, use a Loader
                 // to load content from a content provider.
                 //item = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
-                val json = it.getString(ARG_ITEM)
-                item = Gson().fromJson(json, Venue::class.java)
+                val itemId = it.getString(ARG_ITEM_ID)
+
+                if(itemId != null) {
+                    placeDetailViewModel =
+                            ViewModelProviders.of(this, viewModelFactory).get(PlaceDetailViewModel::class.java)
+                    placeDetailViewModel.loadData(itemId)
+
+                    placeDetailViewModel.getLoading()
+                        .nonNull()
+                        .observe(this) { loading -> if (loading) venue_detail_loading.show() else venue_detail_loading.hide() }
+                    placeDetailViewModel.getError()
+                        .nonNull()
+                        .observe(this) { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
+                    placeDetailViewModel.getData()
+                        .nonNull()
+                        .observe(this) { venue ->
+                            displayVenue(venue)
+                        }
+                }
             }
         }
+    }
+
+    private fun displayVenue(venue: VenuesDetailVenue) {
+        place_title.text = venue.name
+        place_address.text = venue.location.formattedAddress.joinToString("\n", "", "", -1)
+        place_categories.text = venue.categories.firstOrNull()?.name ?: "No category"
+        place_price.text = venue.price?.message ?: "Unspecified"
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.place_detail, container, false)
-
-        // Show the dummy content as text in a TextView.
-        item?.let {
-            rootView.place_title.text = it.name
-            rootView.place_address.text = it.location.formattedAddress.joinToString("\n", "", "", -1)
-
-            Observable
-                .fromIterable(it.categories)
-                .map { category -> category.name }
-                .toList()
-                .subscribe { categories -> rootView.place_categories.text = categories.joinToString(",", "", "", -1)}
-
-        }
-
-        return rootView
+        return inflater.inflate(R.layout.place_detail, container, false)
     }
 
     companion object {
@@ -57,6 +71,6 @@ class PlaceDetailFragment : DaggerFragment() {
          * The fragment argument representing the item ID that this fragment
          * represents.
          */
-        const val ARG_ITEM = "item"
+        const val ARG_ITEM_ID = "item_id"
     }
 }

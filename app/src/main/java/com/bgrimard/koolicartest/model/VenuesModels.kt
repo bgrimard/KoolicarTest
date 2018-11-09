@@ -1,7 +1,5 @@
 package com.bgrimard.koolicartest.model
 
-import com.bgrimard.koolicartest.util.Extensions
-
 //Generated with https://plugins.jetbrains.com/plugin/9960-json-to-kotlin-class-jsontokotlinclass-
 data class VenuesResponse (
     val meta: Meta,
@@ -20,7 +18,7 @@ data class Venue(
     val location: Location,
     val name: String,
     val referralId: String
-) : Extensions.JSONSerializable
+)
 
 data class Category(
     val icon: Icon,

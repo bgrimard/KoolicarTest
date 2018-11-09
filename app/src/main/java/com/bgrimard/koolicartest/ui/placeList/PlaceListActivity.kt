@@ -56,7 +56,7 @@ class PlaceListActivity : DaggerAppCompatActivity() {
 
         placeListViewModel.getLoading()
             .nonNull()
-            .observe(this) { loading -> if (loading) venueListLoading.show() else venueListLoading.hide() }
+            .observe(this) { loading -> if (loading) venue_list_loading.show() else venue_list_loading.hide() }
         placeListViewModel.getError()
             .nonNull()
             .observe(this) { error -> Toast.makeText(this, error, Toast.LENGTH_SHORT).show() }
@@ -81,7 +81,7 @@ class PlaceListActivity : DaggerAppCompatActivity() {
                 if (twoPane) {
                     val fragment = PlaceDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putString(PlaceDetailFragment.ARG_ITEM, item.toJSON())
+                            putString(PlaceDetailFragment.ARG_ITEM_ID, item.id)
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -90,7 +90,7 @@ class PlaceListActivity : DaggerAppCompatActivity() {
                         .commit()
                 } else {
                     val intent = Intent(v.context, PlaceDetailActivity::class.java).apply {
-                        putExtra(PlaceDetailFragment.ARG_ITEM, item.toJSON())
+                        putExtra(PlaceDetailFragment.ARG_ITEM_ID, item.id)
                     }
                     v.context.startActivity(intent)
                 }

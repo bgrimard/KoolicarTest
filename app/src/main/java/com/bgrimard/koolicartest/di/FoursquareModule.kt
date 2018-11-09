@@ -2,9 +2,7 @@ package com.bgrimard.koolicartest.di
 
 import android.content.Context
 import com.bgrimard.koolicartest.R
-import com.bgrimard.koolicartest.repository.FoursquareApi
-import com.bgrimard.koolicartest.repository.FoursquareVenuesRepository
-import com.bgrimard.koolicartest.repository.VenuesRepository
+import com.bgrimard.koolicartest.repository.*
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -34,6 +32,13 @@ class FoursquareModule {
                                         @Named("ClientId") clientId:String,
                                         @Named("ClientSecret") clientSecret:String) : VenuesRepository {
         return FoursquareVenuesRepository(foursquareApi, clientId, clientSecret)
+    }
+
+    @Provides
+    internal fun provideVenueDetailRepository(foursquareApi: FoursquareApi,
+                                        @Named("ClientId") clientId:String,
+                                        @Named("ClientSecret") clientSecret:String) : VenueDetailRepository {
+        return FoursquareVenueDetailRepository(foursquareApi, clientId, clientSecret)
     }
 
     @Provides
